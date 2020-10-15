@@ -30,29 +30,31 @@ public class RunSimulation {
 
 		Config config = ConfigUtils.loadConfig(cmd.getOptionStrict("config-path"), IDFConfigurator.getConfigGroups());
 		cmd.applyConfiguration(config);
-	
-		
+
 		EqasimConfigGroup eqasimConfig = EqasimConfigGroup.get(config);
-	    eqasimConfig.setEstimator("car_pt", "CarPtUtilityEstimator");
-	    
-	    PlanCalcScoreConfigGroup scoringConfig = config.planCalcScore();
-	    ModeParams carPtParams = new ModeParams("car_pt");
-	    scoringConfig.addModeParams(carPtParams);
-	    
-	    ActivityParams params = new ActivityParams( "carPt interaction");
+		eqasimConfig.setEstimator("car_pt", "CarPtUtilityEstimator");
+
+		PlanCalcScoreConfigGroup scoringConfig = config.planCalcScore();
+		ModeParams carPtParams = new ModeParams("car_pt");
+		scoringConfig.addModeParams(carPtParams);
+
+		ActivityParams params = new ActivityParams("carPt interaction");
 		params.setTypicalDuration(100.0);
 		params.setScoringThisActivityAtAll(false);
 
 		scoringConfig.addActivityParams(params);
-		
+
 		DiscreteModeChoiceConfigGroup dmcConfig = (DiscreteModeChoiceConfigGroup) config.getModules()
 				.get(DiscreteModeChoiceConfigGroup.GROUP_NAME);
 
-		//And then you have an attribute "cachedModes". You should augment it with your "car_pt" mode:
+		Collection<String> cachedModes = new HashSet<>(dmcConfig.getCachedModes());
+		cachedModes.add("car_pt");
+		dmcConfig.setCachedModes(cachedModes);
 
-		 Collection<String> cachedModes = new HashSet<>(dmcConfig.getCachedModes());
-		 cachedModes.add("car_pt");
-		 dmcConfig.setCachedModes(cachedModes);
+		// Activation of constraint Car_pt Using
+		Collection<String> tourConstraints = dmcConfig.getTourConstraints();
+		tourConstraints.add("VehicleTourConstraintWithCar_Pt");
+		dmcConfig.setTourConstraints(tourConstraints);
 
 		Scenario scenario = ScenarioUtils.createScenario(config);
 		IDFConfigurator.configureScenario(scenario);

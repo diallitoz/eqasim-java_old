@@ -3,7 +3,7 @@ package org.eqasim.ile_de_france.mode_choice;
 import java.io.File;
 import java.io.IOException;
 
-import org.eqasim.core.components.car_pt.routing.CarPtRoutingModule;
+//import org.eqasim.core.components.car_pt.routing.CarPtRoutingModule;
 import org.eqasim.core.components.config.EqasimConfigGroup;
 import org.eqasim.core.simulation.mode_choice.AbstractEqasimExtension;
 import org.eqasim.core.simulation.mode_choice.ParameterDefinition;
@@ -18,6 +18,7 @@ import org.eqasim.ile_de_france.mode_choice.utilities.estimators.IDFBikeUtilityE
 import org.eqasim.ile_de_france.mode_choice.utilities.estimators.IDFCarUtilityEstimator;
 import org.eqasim.ile_de_france.mode_choice.utilities.predictors.IDFPersonPredictor;
 import org.eqasim.ile_de_france.mode_choice.utilities.predictors.IDFSpatialPredictor;
+import org.eqasim.core.simulation.mode_choice.constraints.VehicleTourConstraintWithCar_Pt;
 import org.matsim.core.config.CommandLine;
 import org.matsim.core.config.CommandLine.ConfigurationException;
 
@@ -62,6 +63,10 @@ public class IDFModeChoiceModule extends AbstractEqasimExtension {
 		bind(ModeParameters.class).to(IDFModeParameters.class);
 		
 		//addRoutingModuleBinding("car_pt").to(CarPtRoutingModule.class);
+		
+		//Constraint register
+		bindTourConstraintFactory("VehicleTourConstraintWithCar_Pt")
+		.to(VehicleTourConstraintWithCar_Pt.Factory.class);
 	}
 
 	@Provides
