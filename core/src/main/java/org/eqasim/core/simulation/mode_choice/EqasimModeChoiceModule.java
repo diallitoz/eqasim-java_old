@@ -14,6 +14,7 @@ import org.eqasim.core.simulation.mode_choice.utilities.ModularUtilityEstimator;
 import org.eqasim.core.simulation.mode_choice.utilities.UtilityEstimator;
 import org.eqasim.core.simulation.mode_choice.utilities.estimators.BikeUtilityEstimator;
 import org.eqasim.core.simulation.mode_choice.utilities.estimators.CarPtUtilityEstimator;
+import org.eqasim.core.simulation.mode_choice.utilities.estimators.PtCarUtilityEstimator;
 import org.eqasim.core.simulation.mode_choice.utilities.estimators.CarUtilityEstimator;
 import org.eqasim.core.simulation.mode_choice.utilities.estimators.PtUtilityEstimator;
 import org.eqasim.core.simulation.mode_choice.utilities.estimators.WalkUtilityEstimator;
@@ -46,6 +47,7 @@ public class EqasimModeChoiceModule extends AbstractEqasimExtension {
 	public static final String PT_ESTIMATOR_NAME = "PtUtilityEstimator";
 	public static final String BIKE_ESTIMATOR_NAME = "BikeUtilityEstimator";
 	public static final String CAR_PT_ESTIMATOR_NAME = "CarPtUtilityEstimator";
+	public static final String PT_CAR_ESTIMATOR_NAME = "PtCarUtilityEstimator";
 	public static final String WALK_ESTIMATOR_NAME = "WalkUtilityEstimator";
 	public static final String ZERO_ESTIMATOR_NAME = "ZeroUtilityEstimator";
 
@@ -75,6 +77,7 @@ public class EqasimModeChoiceModule extends AbstractEqasimExtension {
 		bindUtilityEstimator(PT_ESTIMATOR_NAME).to(PtUtilityEstimator.class);
 		bindUtilityEstimator(BIKE_ESTIMATOR_NAME).to(BikeUtilityEstimator.class);
 		bindUtilityEstimator(CAR_PT_ESTIMATOR_NAME).to(CarPtUtilityEstimator.class);
+		bindUtilityEstimator(PT_CAR_ESTIMATOR_NAME).to(PtCarUtilityEstimator.class);
 		bindUtilityEstimator(WALK_ESTIMATOR_NAME).to(WalkUtilityEstimator.class);
 
 		bindCostModel(ZERO_COST_MODEL_NAME).to(ZeroCostModel.class);
