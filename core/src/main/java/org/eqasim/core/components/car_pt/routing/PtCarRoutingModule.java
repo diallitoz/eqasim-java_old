@@ -51,6 +51,7 @@ public class PtCarRoutingModule implements RoutingModule {
 			parkRideCoords.add(prCoord);
 		}
 
+		//To do: search the P&R station near the radius of destination point
 		Coord prCoord = parkRideCoords.get(0); // XY coords of some "test" P&R station somewhere in your scenario. Later
 												// you'll want to choose one specifically
 

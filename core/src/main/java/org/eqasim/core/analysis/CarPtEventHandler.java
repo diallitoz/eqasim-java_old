@@ -30,7 +30,7 @@ public class CarPtEventHandler implements ActivityStartEventHandler {
 	public void reset(int iteration) {
 		String counter1 = "Number of carPt interaction = " + intermodalCountCarPt + "\n";
 		
-		 counter1 += "Number of ptCar interaction = " + intermodalCountPtCar + ";";
+		String counter2 = "Number of ptCar interaction = " + intermodalCountPtCar + "\n";
 
 		File outputFile = new File("/home/dialloaziseoumar/AziseThesis/GenerationPopulationSynthetique/mel/output/intermodalCount" + iteration + ".html");
 		
@@ -38,6 +38,8 @@ public class CarPtEventHandler implements ActivityStartEventHandler {
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile)));
 		
 			writer.write(counter1);
+			writer.flush();
+			writer.write(counter2);
 			writer.close();
 		} catch (IOException e) {
 			throw new RuntimeException(e);

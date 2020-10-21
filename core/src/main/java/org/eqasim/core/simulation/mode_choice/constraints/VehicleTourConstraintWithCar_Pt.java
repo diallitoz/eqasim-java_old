@@ -22,7 +22,7 @@ public class VehicleTourConstraintWithCar_Pt implements TourConstraint {
 
 	public VehicleTourConstraintWithCar_Pt(Collection<String> restrictedModes,
 			Id<? extends BasicLocation> homeLocationId, List<Coord> parkRideCoords) {
-		this.restrictedModes = restrictedModes;//What are these modes for agent????
+		this.restrictedModes = restrictedModes;// What are these modes for agent????
 		this.homeLocationId = homeLocationId;
 		this.parkRideCoords = parkRideCoords;
 	}
@@ -49,61 +49,54 @@ public class VehicleTourConstraintWithCar_Pt implements TourConstraint {
 
 	@Override
 	public boolean validateBeforeEstimation(List<DiscreteModeChoiceTrip> tour, List<String> modes,
-			List<List<String>> previousModes) {//What are the modes for an agent???
-		//if (modes.contains("car_pt")) {
-			for (String restrictedMode : restrictedModes) {
-				if (modes.contains(restrictedMode)) {
-					int firstIndex = getFirstIndex(restrictedMode, modes);
-					int lastIndex = getLastIndex(restrictedMode, modes);
+			List<List<String>> previousModes) {// What are the modes for an agent???
+		// if (modes.contains("car_pt")) {
+		for (String restrictedMode : restrictedModes) {
+			if (modes.contains(restrictedMode) && (restrictedMode == "car_pt" || restrictedMode == "pt_car")) {
 
-					if (homeLocationId != null) {
-						Id<? extends BasicLocation> startLocationId = LocationUtils
-								.getLocationId(tour.get(firstIndex).getOriginActivity());
-						Id<? extends BasicLocation> endLocationId = LocationUtils
-								.getLocationId(tour.get(lastIndex).getDestinationActivity());
+				// Take into account the tour with only two trips (h-w-h or h-l-h or h-sh-h or
+				// h-sc-h)
+				if (tour.size() > 2) {
+					return false;
+				}
+				int firstIndex = getFirstIndex(restrictedMode, modes);
+				int lastIndex = getLastIndex("pt_car", modes);
 
-						if (!startLocationId.equals(homeLocationId)) {
-							return false;
-						}
+				if (homeLocationId != null) {
+					Id<? extends BasicLocation> startLocationId = LocationUtils
+							.getLocationId(tour.get(firstIndex).getOriginActivity());
+					Id<? extends BasicLocation> endLocationId = LocationUtils
+							.getLocationId(tour.get(lastIndex).getDestinationActivity());
 
-						if (!endLocationId.equals(homeLocationId)) {
-							return false;
-						}
-					} else {
-						if (firstIndex > 0 || lastIndex < modes.size() - 1) {//what does this condition mean?
-							return false;
-						}
+					if (!startLocationId.equals(homeLocationId)) {
+						return false;
 					}
-					
 
-					Id<? extends BasicLocation> currentLocationId = LocationUtils
-							.getLocationId(tour.get(firstIndex).getDestinationActivity());
-
-					for (int index = firstIndex + 1; index <= lastIndex; index++) {
-						if (modes.get(index).equals(restrictedMode)) {//Si c'est toujours le meme mode pour le prochain deplacement
-							DiscreteModeChoiceTrip trip = tour.get(index);
-
-							if (!currentLocationId.equals(LocationUtils.getLocationId(trip.getOriginActivity()))) {
-								return false;
-							}
-
-							currentLocationId = LocationUtils.getLocationId(trip.getDestinationActivity());
-						}
+					if (!endLocationId.equals(homeLocationId)) {
+						return false;
 					}
-					
-					// Case of car_pt
-					
-					if(restrictedMode=="car_pt") {
-						Id<? extends BasicLocation> starLoId = LocationUtils
-								.getLocationId(tour.get(modes.indexOf("car_pt")).getOriginActivity());
-						Id<? extends BasicLocation> endLoId= LocationUtils
-								.getLocationId(tour.get(modes.indexOf("car_pt")).getDestinationActivity());
-						
+				}
+
+				/*
+				 * If the mode used is car-pt for the outward trip then for the return, the mode
+				 * to be used must be pt_car. For the moment, it is assumed that the user always
+				 * comes home with his car, necessarily passing through the relay car park.
+				 */
+				DiscreteModeChoiceTrip nextTrip = tour.get(firstIndex + 1);
+
+				if (restrictedMode == "car_pt") {
+					if (!nextTrip.getInitialMode().equals("pt_car")) {
+						return false;
+					}
+				}
+
+				if (restrictedMode == "pt_car") {
+					if (!nextTrip.getInitialMode().equals("car_pt")) {
+						return false;
 					}
 				}
 			}
-
-		//}
+		}
 
 		return true;
 	}
@@ -128,7 +121,8 @@ public class VehicleTourConstraintWithCar_Pt implements TourConstraint {
 		@Override
 		public TourConstraint createConstraint(Person person, List<DiscreteModeChoiceTrip> planTrips,
 				Collection<String> availableModes) {
-			return new VehicleTourConstraintWithCar_Pt(restrictedModes, homeFinder.getHomeLocationId(planTrips),parkRideCoords);
+			return new VehicleTourConstraintWithCar_Pt(restrictedModes, homeFinder.getHomeLocationId(planTrips),
+					parkRideCoords);
 		}
 	}
 
