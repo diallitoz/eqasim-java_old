@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.eqasim.core.components.car_pt.routing.EqasimCarPtModule;
 import org.eqasim.core.components.car_pt.routing.EqasimPtCarModule;
+import org.eqasim.core.components.car_pt.routing.ParkingFinder;
 import org.eqasim.core.components.config.EqasimConfigGroup;
 import org.eqasim.core.simulation.analysis.EqasimAnalysisModule;
 import org.eqasim.core.simulation.mode_choice.EqasimModeChoiceModule;
@@ -112,22 +113,24 @@ public class RunSimulation {
 		cachedModes.add("pt_car");
 		dmcConfig.setCachedModes(cachedModes);
 
-		// Activation of constraint Car_pt Using
+		// Activation of constraint intermodal modes Using
 		Collection<String> tourConstraints = new HashSet<>(dmcConfig.getTourConstraints());
-		tourConstraints.add("VehicleTourConstraintWithCar_Pt");
+		//tourConstraints.add("VehicleTourConstraintWithCar_Pt");
+		tourConstraints.add("IntermodalModesConstraint");
 		dmcConfig.setTourConstraints(tourConstraints);
 
 		Scenario scenario = ScenarioUtils.createScenario(config);
 		IDFConfigurator.configureScenario(scenario);
 		ScenarioUtils.loadScenario(scenario);
+		
 
 		Controler controller = new Controler(scenario);
 		IDFConfigurator.configureController(controller);
 		controller.addOverridingModule(new EqasimAnalysisModule());
 		controller.addOverridingModule(new EqasimModeChoiceModule());
-		controller.addOverridingModule(new IDFModeChoiceModule(cmd, parkRideCoords));
-		controller.addOverridingModule(new EqasimCarPtModule());
-		controller.addOverridingModule(new EqasimPtCarModule());
-		controller.run();
+		controller.addOverridingModule(new IDFModeChoiceModule(cmd, parkRideCoords,scenario.getNetwork()));
+		controller.addOverridingModule(new EqasimCarPtModule(parkRideCoords));
+		controller.addOverridingModule(new EqasimPtCarModule(parkRideCoords));
+		controller.run();	
 	}
 }

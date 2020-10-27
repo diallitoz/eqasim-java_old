@@ -22,8 +22,10 @@ import org.eqasim.ile_de_france.mode_choice.utilities.estimators.IDFBikeUtilityE
 import org.eqasim.ile_de_france.mode_choice.utilities.estimators.IDFCarUtilityEstimator;
 import org.eqasim.ile_de_france.mode_choice.utilities.predictors.IDFPersonPredictor;
 import org.eqasim.ile_de_france.mode_choice.utilities.predictors.IDFSpatialPredictor;
+import org.eqasim.core.simulation.mode_choice.constraints.IntermodalModesConstraint;
 import org.eqasim.core.simulation.mode_choice.constraints.VehicleTourConstraintWithCar_Pt;
 import org.matsim.api.core.v01.Coord;
+import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.config.CommandLine;
 import org.matsim.core.config.CommandLine.ConfigurationException;
 
@@ -47,10 +49,12 @@ public class IDFModeChoiceModule extends AbstractEqasimExtension {
 	public static final String BIKE_ESTIMATOR_NAME = "IDFBikeUtilityEstimator";
 	
 	public final List<Coord> parkRideCoords;
+	public final Network network;
 
-	public IDFModeChoiceModule(CommandLine commandLine, List<Coord> parkRideCoords) {
+	public IDFModeChoiceModule(CommandLine commandLine, List<Coord> parkRideCoords, Network network) {
 		this.commandLine = commandLine;
 		this.parkRideCoords = parkRideCoords;
+		this.network = network;
 	}
 
 	@Override
@@ -80,6 +84,8 @@ public class IDFModeChoiceModule extends AbstractEqasimExtension {
 		//Constraint register
 		bindTourConstraintFactory("VehicleTourConstraintWithCar_Pt")
 		.to(VehicleTourConstraintWithCar_Pt.Factory.class);
+		bindTourConstraintFactory("IntermodalModesConstraint")
+		.to(IntermodalModesConstraint.Factory.class);
 		
 		//Intermodal count
 		addEventHandlerBinding().to(CarPtEventHandler.class);
@@ -119,5 +125,13 @@ public class IDFModeChoiceModule extends AbstractEqasimExtension {
 			DiscreteModeChoiceConfigGroup dmcConfig, @Named("tour") HomeFinder homeFinder) {
 		VehicleTourConstraintConfigGroup config = dmcConfig.getVehicleTourConstraintConfig();
 		return new VehicleTourConstraintWithCar_Pt.Factory(config.getRestrictedModes(), homeFinder, parkRideCoords);
+	}
+	
+	@Provides
+	@Singleton
+	public IntermodalModesConstraint.Factory provideIntermodalModesConstraintFactory(
+			DiscreteModeChoiceConfigGroup dmcConfig, @Named("tour") HomeFinder homeFinder) {
+		VehicleTourConstraintConfigGroup config = dmcConfig.getVehicleTourConstraintConfig();
+		return new IntermodalModesConstraint.Factory(config.getRestrictedModes(), homeFinder, parkRideCoords, network);
 	}
 }

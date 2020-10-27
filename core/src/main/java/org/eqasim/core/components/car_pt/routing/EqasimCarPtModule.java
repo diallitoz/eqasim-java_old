@@ -1,7 +1,9 @@
 package org.eqasim.core.components.car_pt.routing;
 
 import java.util.Collections;
+import java.util.List;
 
+import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.core.controler.AbstractModule;
 import org.matsim.core.network.NetworkUtils;
@@ -12,7 +14,13 @@ import com.google.inject.Provides;
 import com.google.inject.name.Named;
 
 public class EqasimCarPtModule extends AbstractModule{
-	
+	List<Coord> parkRideCoords;
+
+	public EqasimCarPtModule(List<Coord> parkRideCoords) {
+		this.parkRideCoords = parkRideCoords;
+	}
+
+
 	@Override
 	public void install() {
 		// TODO Auto-generated method stub
@@ -24,7 +32,7 @@ public class EqasimCarPtModule extends AbstractModule{
 	public CarPtRoutingModule provideCarPtRoutingModule(@Named("car")RoutingModule roadRoutingModule, @Named("pt")RoutingModule ptRoutingModule, Network network) {
 		Network carNetwork = NetworkUtils.createNetwork();
 		new TransportModeNetworkFilter(network).filter(carNetwork, Collections.singleton("car"));
-		return new CarPtRoutingModule(roadRoutingModule, ptRoutingModule, carNetwork);
+		return new CarPtRoutingModule(roadRoutingModule, ptRoutingModule, carNetwork, parkRideCoords);
 		
 	}
 	
