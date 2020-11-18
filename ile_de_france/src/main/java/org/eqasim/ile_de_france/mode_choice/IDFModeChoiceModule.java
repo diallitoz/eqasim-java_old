@@ -31,7 +31,10 @@ import org.eqasim.core.simulation.mode_choice.constraints.VehicleTourConstraintW
 import org.eqasim.core.simulation.mode_choice.cost.CostModel;
 import org.matsim.api.core.v01.Coord;
 import org.matsim.api.core.v01.network.Network;
+<<<<<<< HEAD
 import org.matsim.api.core.v01.population.PopulationFactory;
+=======
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 import org.matsim.core.config.CommandLine;
 import org.matsim.core.config.CommandLine.ConfigurationException;
 import org.matsim.core.network.NetworkUtils;
@@ -59,6 +62,7 @@ public class IDFModeChoiceModule extends AbstractEqasimExtension {
 
 	public final List<Coord> parkRideCoords;
 	public final Network network;
+<<<<<<< HEAD
 	private final PopulationFactory populationFactory;
 
 	public IDFModeChoiceModule(CommandLine commandLine, List<Coord> parkRideCoords, Network network,
@@ -67,6 +71,13 @@ public class IDFModeChoiceModule extends AbstractEqasimExtension {
 		this.parkRideCoords = parkRideCoords;
 		this.network = network;
 		this.populationFactory = populationFactory;
+=======
+
+	public IDFModeChoiceModule(CommandLine commandLine, List<Coord> parkRideCoords, Network network) {
+		this.commandLine = commandLine;
+		this.parkRideCoords = parkRideCoords;
+		this.network = network;
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 	}
 
 	@Override
@@ -93,6 +104,7 @@ public class IDFModeChoiceModule extends AbstractEqasimExtension {
 		bind(PtCarPredictor.class);
 
 		bind(ModeParameters.class).to(IDFModeParameters.class);
+<<<<<<< HEAD
 		// bind(ModeParameters.class).to(MelModeParameters.class);
 
 		// Constraint register
@@ -100,6 +112,16 @@ public class IDFModeChoiceModule extends AbstractEqasimExtension {
 		bindTourConstraintFactory("IntermodalModesConstraint").to(IntermodalModesConstraint.Factory.class);
 
 		// Intermodal count
+=======
+		
+		//Constraint register
+		bindTourConstraintFactory("VehicleTourConstraintWithCar_Pt")
+		.to(VehicleTourConstraintWithCar_Pt.Factory.class);
+		bindTourConstraintFactory("IntermodalModesConstraint")
+		.to(IntermodalModesConstraint.Factory.class);
+		
+		//Intermodal count
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 		addEventHandlerBinding().to(CarPtEventHandler.class);
 
 	}
@@ -152,7 +174,11 @@ public class IDFModeChoiceModule extends AbstractEqasimExtension {
 		VehicleTourConstraintConfigGroup config = dmcConfig.getVehicleTourConstraintConfig();
 		return new VehicleTourConstraintWithCar_Pt.Factory(config.getRestrictedModes(), homeFinder, parkRideCoords);
 	}
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 	@Provides
 	@Singleton
 	public IntermodalModesConstraint.Factory provideIntermodalModesConstraintFactory(
@@ -160,5 +186,8 @@ public class IDFModeChoiceModule extends AbstractEqasimExtension {
 		VehicleTourConstraintConfigGroup config = dmcConfig.getVehicleTourConstraintConfig();
 		return new IntermodalModesConstraint.Factory(config.getRestrictedModes(), homeFinder, parkRideCoords, network);
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 }

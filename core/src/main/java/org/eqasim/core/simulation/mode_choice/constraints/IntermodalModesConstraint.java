@@ -64,6 +64,7 @@ public class IntermodalModesConstraint implements TourConstraint {
 		boolean found_car_pt = false;
 		boolean found_pt_car = false;
 
+<<<<<<< HEAD
 		// checking car_pt and pt_car in the list of possible modes to be used
 		/*
 		 * for (String mode : modes) { if (mode.equals("pt_car")) { found_pt_car = true;
@@ -73,11 +74,33 @@ public class IntermodalModesConstraint implements TourConstraint {
 		 * 
 		 * found_pt_car = false; } }
 		 */
+=======
+		//checking car_pt and pt_car in the list of possible modes to be used
+		/*
+		for (String mode : modes) {
+			if (mode.equals("pt_car")) {
+				found_pt_car = true;
+			}
+
+			if (mode.equals("car_pt")) {
+				if (!found_pt_car) {
+					return false;
+				}
+
+				found_pt_car = false;
+			}
+		}
+		*/
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 		for (String mode : modes) {
 			if (mode.equals("car_pt")) {
 				found_car_pt = true;
 			}
+<<<<<<< HEAD
 
+=======
+			
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 			if (mode.equals("pt_car")) {
 				if (!found_car_pt) {
 					return false;
@@ -86,10 +109,15 @@ public class IntermodalModesConstraint implements TourConstraint {
 				found_car_pt = false;
 			}
 		}
+<<<<<<< HEAD
+=======
+		
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 
 		if (found_car_pt) {
 			return false;
 		}
+<<<<<<< HEAD
 
 		Id<? extends BasicLocation> latestCarPtOriginId = null;
 		Facility prkFacilityOrig = null;
@@ -120,12 +148,35 @@ public class IntermodalModesConstraint implements TourConstraint {
 				// return false;
 				// }
 
+=======
+		
+		Id<? extends BasicLocation> latestCarPtOriginId = null;
+
+		for (int i = 0; i < tour.size(); i++) {
+			if (modes.get(i).equals("car_pt")) {
+				latestCarPtOriginId = LocationUtils.getLocationId(tour.get(i).getOriginActivity());
+				
+				ParkingFinder prFinder = new ParkingFinder(parkRideCoords);
+				
+				Facility prkFacility = prFinder.getParking(tour.get(i).getOriginActivity().getCoord(), network);
+				
+				Link prLink = NetworkUtils.getNearestLink(network, prkFacility.getCoord());
+				
+				Activity intermodalInteraction = PopulationUtils.createActivityFromCoordAndLinkId("intermodal interaction",
+						prkFacility.getCoord(), prLink.getId());
+				
+				// To do parking location constraint
+				if (latestCarPtOriginId.equals(LocationUtils.getLocationId(intermodalInteraction))) {
+					return false;
+				}
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 			}
 
 			if (modes.get(i).equals("pt_car")) {
 				Id<? extends BasicLocation> currentLocationId = LocationUtils
 						.getLocationId(tour.get(i).getDestinationActivity());
 
+<<<<<<< HEAD
 				// Checking for Origin of car_pt and destination of pt_car
 				//if (!latestCarPtOriginId.equals(currentLocationId)) {
 				//	return false;
@@ -151,6 +202,11 @@ public class IntermodalModesConstraint implements TourConstraint {
 				//	return false;
 				//}
 
+=======
+				if (!latestCarPtOriginId.equals(currentLocationId)) {
+					return false;
+				}
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 			}
 		}
 
@@ -169,8 +225,12 @@ public class IntermodalModesConstraint implements TourConstraint {
 		private final List<Coord> parkRideCoords;
 		private final Network network;
 
+<<<<<<< HEAD
 		public Factory(Collection<String> restrictedModes, HomeFinder homeFinder, List<Coord> parkRideCoords,
 				Network network) {
+=======
+		public Factory(Collection<String> restrictedModes, HomeFinder homeFinder, List<Coord> parkRideCoords, Network network) {
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 			this.restrictedModes = restrictedModes;
 			this.homeFinder = homeFinder;
 			this.parkRideCoords = parkRideCoords;
@@ -181,7 +241,11 @@ public class IntermodalModesConstraint implements TourConstraint {
 		public TourConstraint createConstraint(Person person, List<DiscreteModeChoiceTrip> planTrips,
 				Collection<String> availableModes) {
 			return new IntermodalModesConstraint(restrictedModes, homeFinder.getHomeLocationId(planTrips),
+<<<<<<< HEAD
 					parkRideCoords, network);
+=======
+					parkRideCoords,network);
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 		}
 	}
 

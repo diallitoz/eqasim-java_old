@@ -9,7 +9,10 @@ import org.matsim.api.core.v01.network.Link;
 import org.matsim.api.core.v01.network.Network;
 import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Person;
+<<<<<<< HEAD
 import org.matsim.api.core.v01.population.PlanElement;
+=======
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.router.LinkWrapperFacility;
 import org.matsim.core.utils.geometry.CoordUtils;
@@ -30,12 +33,21 @@ public final class ParkingFinder {
 	/*
 	 * This function return a parking lot Facility based either on home location of
 	 * the agent either on origin location and destination location. The last case
+<<<<<<< HEAD
 	 * can be spilt according the aim of the agent. For example, there are people
 	 * who want to drive by car a long part of the trip. There are also, those who
 	 * want to perform the most part of trip by PT. We start with the last point.
 	 */
 	// Based on Activity location
 	public Id<Facility> getParking(Person person, Activity origActivity, Activity destActivity, Network network) {
+=======
+	 * can be spilt according the aim of the agent. For example, there are people who
+	 * want to drive by car a long part of the trip. There are also, those who want
+	 * to perform the most part of trip by PT. We start with the last point.
+	 */
+	//Based on Activity location
+	public  Id<Facility> getParking(Person person, Activity origActivity, Activity destActivity, Network network) {
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 		double minDist = 999999999.0;
 		double distance = 0.0;
 		int minIndex = 0;
@@ -50,6 +62,7 @@ public final class ParkingFinder {
 		Link prLink = NetworkUtils.getNearestLink(network, coord);
 
 		Facility prFacility = new LinkWrapperFacility(prLink);
+<<<<<<< HEAD
 
 		return null;
 	}
@@ -126,6 +139,19 @@ public final class ParkingFinder {
 
 		for (int i = 0; i < parkRideCoords.size(); i++) {
 			distance = CoordUtils.calcEuclideanDistance(parkRideCoords.get(i), homeXY);
+=======
+		
+		return null;
+	}
+	
+	//Based on Facility location
+	public Facility getParking(Person person, Facility fromFacility, Facility toFacility, Network network) {
+		double minDist = 999999999.0;
+		double distance = 0.0;
+		int minIndex = 0;
+		for (int i = 0; i < parkRideCoords.size(); i++) {
+			distance = CoordUtils.calcEuclideanDistance(parkRideCoords.get(i), fromFacility.getCoord());
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 			if (minDist > distance) {
 				minDist = distance;
 				minIndex = i;
@@ -138,8 +164,13 @@ public final class ParkingFinder {
 
 		return prFacility;
 	}
+<<<<<<< HEAD
 
 	// Based on a given location (Coord) and a person
+=======
+	
+	//Based on a given location (Coord) and a person
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 	public Facility getParking(Person person, Coord coord, Network network) {
 		double minDist = 999999999.0;
 		double distance = 0.0;
@@ -158,6 +189,7 @@ public final class ParkingFinder {
 
 		return prFacility;
 	}
+<<<<<<< HEAD
 
 	// Based on a given location (Coord)
 	public Facility getParking(Coord coord, Network network) {
@@ -179,5 +211,28 @@ public final class ParkingFinder {
 
 		return prFacility;
 	}
+=======
+	
+	//Based on a given location (Coord)
+		public Facility getParking(Coord coord, Network network) {
+			
+			double minDist = 999999999.0;
+			double distance = 0.0;
+			int minIndex = 0;
+			for (int i = 0; i < parkRideCoords.size(); i++) {
+				distance = CoordUtils.calcEuclideanDistance(parkRideCoords.get(i), coord);
+				if (minDist > distance) {
+					minDist = distance;
+					minIndex = i;
+				}
+			}
+			Coord coordParking = new Coord(parkRideCoords.get(minIndex).getX(), parkRideCoords.get(minIndex).getY());
+			Link prLink = NetworkUtils.getNearestLink(network, coordParking);
+
+			Facility prFacility = new LinkWrapperFacility(prLink);
+
+			return prFacility;
+		}
+>>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 
 }
