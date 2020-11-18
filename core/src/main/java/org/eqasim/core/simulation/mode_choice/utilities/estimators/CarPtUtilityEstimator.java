@@ -18,34 +18,67 @@ import ch.ethz.matsim.discrete_mode_choice.model.DiscreteModeChoiceTrip;
 public class CarPtUtilityEstimator implements UtilityEstimator {
 	private final ModeParameters parameters;
 	private final CarPtPredictor carPtPredictor;
-	//private final PersonPredictor personPredictor;
+	// private final PersonPredictor personPredictor;
 
 	@Inject
 	public CarPtUtilityEstimator(ModeParameters parameters, PersonPredictor personPredictor,
 			CarPtPredictor carPtPredictor) {
 		this.parameters = parameters;
 		this.carPtPredictor = carPtPredictor;
-		//this.personPredictor = personPredictor;
+		// this.personPredictor = personPredictor;
 	}
 
 	protected double estimateConstantUtility() {
-		return parameters.car_pt.alpha_u;
+		return parameters.car.alpha_u + parameters.pt.alpha_u;
+
 	}
 
 	protected double estimateTravelTimeUtility(CarPtVariables variables) {
-		return parameters.car_pt.betaTravelTime_u_min * variables.travelTime_min;
+		return parameters.car.betaTravelTime_u_min * variables.travelTime_min;
 	}
 
+	protected double estimateAccessEgressTimeUtility(CarPtVariables variables) {
+		return parameters.walk.betaTravelTime_u_min * variables.accessEgressTime_min_car
+				+ parameters.pt.betaAccessEgressTime_u_min * variables.accessEgressTime_min_pt;
+	}
+
+	protected double estimateInVehicleTimeUtility(CarPtVariables variables) {
+		return parameters.pt.betaInVehicleTime_u_min * variables.inVehicleTime_min;
+	}
+
+	protected double estimateWaitingTimeUtility(CarPtVariables variables) {
+		return parameters.pt.betaWaitingTime_u_min * variables.waitingTime_min;
+	}
+
+	protected double estimateLineSwitchUtility(CarPtVariables variables) {
+		return parameters.pt.betaLineSwitch_u * variables.numberOfLineSwitches;
+	}
+
+	protected double estimateMonetaryCostUtility(CarPtVariables variables) {
+		return parameters.betaCost_u_MU
+				* EstimatorUtils.interaction(variables.euclideanDistance_km_car,
+						parameters.referenceEuclideanDistance_km, parameters.lambdaCostEuclideanDistance)
+				* variables.cost_MU_car
+				+ parameters.betaCost_u_MU
+						* EstimatorUtils.interaction(variables.euclideanDistance_km_pt,
+								parameters.referenceEuclideanDistance_km, parameters.lambdaCostEuclideanDistance)
+						* variables.cost_MU_pt;
+	}
 
 	@Override
 	public double estimateUtility(Person person, DiscreteModeChoiceTrip trip, List<? extends PlanElement> elements) {
-		//PersonVariables personVariables = personPredictor.predictVariables(person, trip, elements);
-		CarPtVariables carPtVariables = carPtPredictor.predictVariables(person, trip, elements);
+		CarPtVariables variables = carPtPredictor.predictVariables(person, trip, elements);
 
+		// double utility = 1000000.0;
 		double utility = 0.0;
 
 		utility += estimateConstantUtility();
-		utility += estimateTravelTimeUtility(carPtVariables);
+		utility += estimateTravelTimeUtility(variables);
+		utility += estimateAccessEgressTimeUtility(variables);
+		utility += estimateInVehicleTimeUtility(variables);
+		utility += estimateWaitingTimeUtility(variables);
+		utility += estimateLineSwitchUtility(variables);
+		utility += estimateMonetaryCostUtility(variables);
 
 		return utility;
 	}

@@ -23,6 +23,7 @@ import org.eqasim.core.simulation.mode_choice.utilities.predictors.BikePredictor
 import org.eqasim.core.simulation.mode_choice.utilities.predictors.CarPredictor;
 import org.eqasim.core.simulation.mode_choice.utilities.predictors.CarPtPredictor;
 import org.eqasim.core.simulation.mode_choice.utilities.predictors.PersonPredictor;
+import org.eqasim.core.simulation.mode_choice.utilities.predictors.PtCarPredictor;
 import org.eqasim.core.simulation.mode_choice.utilities.predictors.PtPredictor;
 import org.eqasim.core.simulation.mode_choice.utilities.predictors.WalkPredictor;
 import org.matsim.core.router.TripRouter;
@@ -68,7 +69,8 @@ public class EqasimModeChoiceModule extends AbstractEqasimExtension {
 		bind(CarPredictor.class);
 		bind(PtPredictor.class);
 		bind(BikePredictor.class);
-		bind(CarPtPredictor.class);
+		//bind(CarPtPredictor.class);
+		//bind(PtCarPredictor.class);
 		bind(WalkPredictor.class);
 		bind(PersonPredictor.class);
 

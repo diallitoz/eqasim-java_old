@@ -1,6 +1,7 @@
 package org.eqasim.core.components.car_pt.routing;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,8 +12,10 @@ import org.matsim.api.core.v01.population.Activity;
 import org.matsim.api.core.v01.population.Leg;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.api.core.v01.population.Route;
 import org.matsim.core.network.NetworkUtils;
 import org.matsim.core.population.PopulationUtils;
+import org.matsim.core.population.routes.GenericRouteImpl;
 import org.matsim.core.router.LinkWrapperFacility;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.core.router.StageActivityTypes;
@@ -26,41 +29,43 @@ public class PtCarRoutingModule implements RoutingModule {
 
 	// Create an object of a ptRoutingModule
 	private final RoutingModule ptRoutingModule;
+	
+	private final List<Coord> parkRideCoords;
 
-	public PtCarRoutingModule(RoutingModule ptRoutingModule, RoutingModule roadRoutingModule, Network network) {
+	public PtCarRoutingModule(RoutingModule ptRoutingModule, RoutingModule roadRoutingModule, Network network, List<Coord> parkRideCoords) {
 		this.carRoutingModule = roadRoutingModule;
 		this.ptRoutingModule = ptRoutingModule;
 		this.network = network;
+		this.parkRideCoords = parkRideCoords;
 
 	}
 
 	@Override
+/*
+	 public List<? extends PlanElement> calcRoute(Facility fromFacility, Facility
+	 toFacility, double departureTime, Person person) { 
+	//Id<AVOperator> operatorId = choiceStrategy.chooseRandomOperator(); 
+	//return calcRoute(fromFacility, toFacility, departureTime, person, operatorId);
+	 Leg leg = PopulationUtils.createLeg("car_pt"); leg.setTravelTime(600.0);
+	 Route route = new GenericRouteImpl(fromFacility.getLinkId(), toFacility.getLinkId()); route.setTravelTime(600.0);
+	 route.setDistance(100.0);
+	 leg.setRoute(route);
+	 return Collections.singletonList(leg); 
+	 }
+	 */
+	
 	public List<? extends PlanElement> calcRoute(Facility fromFacility, Facility toFacility, double departureTime,
 			Person person) {
 		// Park and ride lot location
-		List<Coord> parkRideCoords = new ArrayList<Coord>();
+		
+		ParkingFinder prFinder = new ParkingFinder(parkRideCoords);
+		//Facility prFacility = prFinder.getParking(person, fromFacility, toFacility, network);
 
-		double[] xCoord = { 695217.09, 691365.43, 703543.53, 702770.20, 693929.84, 704530.69, 708963.08, 711811.05,
-				685914.90, 712180.02, 702337.39, 709906.41 };
-
-		double[] yCoord = { 7059186.19, 7065019.42, 7057923.10, 7056776.29, 7050511.72, 7057833.24, 7061460.64,
-				7068903.84, 7047847.26, 7071112.37, 7049972.24, 7056430.63 };
-
-		for (int i = 0; i < yCoord.length; i++) {
-			Coord prCoord = new Coord(xCoord[i], yCoord[i]);
-			parkRideCoords.add(prCoord);
-		}
-
-		//To do: search the P&R station near the radius of destination point
-		Coord prCoord = parkRideCoords.get(0); // XY coords of some "test" P&R station somewhere in your scenario. Later
-												// you'll want to choose one specifically
-
-		Link prLink = NetworkUtils.getNearestLink(network, prCoord);
-
-		Facility prFacility = new LinkWrapperFacility(prLink);
-
+		
+		Facility prkFacility = prFinder.getParking(person, fromFacility, toFacility, network);
+		
 		// Creation of a PT trip from the destination point to PR facility
-		List<? extends PlanElement> ptElements = ptRoutingModule.calcRoute(fromFacility, prFacility, departureTime,
+		List<? extends PlanElement> ptElements = ptRoutingModule.calcRoute(fromFacility, prkFacility, departureTime,
 				person);
 
 		// double vehicleDistance = Double.NaN;
@@ -77,12 +82,14 @@ public class PtCarRoutingModule implements RoutingModule {
 		double carDepartureTime = departureTime + vehicleTravelTime + timeToAccessCar;
 
 		// Creation of a the car trip from the PR facility to the origin point (home)
-		List<? extends PlanElement> carElements = carRoutingModule.calcRoute(prFacility, toFacility, carDepartureTime,
+		List<? extends PlanElement> carElements = carRoutingModule.calcRoute(prkFacility, toFacility, carDepartureTime,
 				null);
 
-		// Creation interaction between car and pt
+		// Creation interaction between pt and car
+		Link prLink = NetworkUtils.getNearestLink(network, prkFacility.getCoord());
 		Activity interactionActivtyPtCar = PopulationUtils.createActivityFromCoordAndLinkId("ptCar interaction",
-				prCoord, prLink.getId());
+				prkFacility.getCoord(), prLink.getId());
+		interactionActivtyPtCar.setMaximumDuration(300);// 5 min
 
 		// Creation full trip
 		List<PlanElement> allElements = new LinkedList<>();
@@ -95,7 +102,7 @@ public class PtCarRoutingModule implements RoutingModule {
 
 	@Override
 	public StageActivityTypes getStageActivityTypes() {
-		return new StageActivityTypesImpl("pt interaction", "ptCar interaction");
+		return new StageActivityTypesImpl("pt interaction", "ptCar interaction", "car interaction");
 	}
 
 }

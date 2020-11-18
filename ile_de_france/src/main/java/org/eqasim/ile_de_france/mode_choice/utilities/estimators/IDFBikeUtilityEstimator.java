@@ -5,7 +5,8 @@ import java.util.List;
 import org.eqasim.core.simulation.mode_choice.utilities.estimators.BikeUtilityEstimator;
 import org.eqasim.core.simulation.mode_choice.utilities.predictors.BikePredictor;
 import org.eqasim.core.simulation.mode_choice.utilities.predictors.PersonPredictor;
-import org.eqasim.ile_de_france.mode_choice.parameters.IDFModeParameters;
+//import org.eqasim.ile_de_france.mode_choice.parameters.IDFModeParameters;
+import org.eqasim.ile_de_france.mode_choice.parameters.MelModeParameters;
 import org.eqasim.ile_de_france.mode_choice.utilities.predictors.IDFSpatialPredictor;
 import org.eqasim.ile_de_france.mode_choice.utilities.variables.IDFSpatialVariables;
 import org.matsim.api.core.v01.population.Person;
@@ -16,11 +17,11 @@ import com.google.inject.Inject;
 import ch.ethz.matsim.discrete_mode_choice.model.DiscreteModeChoiceTrip;
 
 public class IDFBikeUtilityEstimator extends BikeUtilityEstimator {
-	private final IDFModeParameters parameters;
+	private final MelModeParameters parameters;
 	private final IDFSpatialPredictor spatialPredictor;
 
 	@Inject
-	public IDFBikeUtilityEstimator(IDFModeParameters parameters, IDFSpatialPredictor spatialPredictor,
+	public IDFBikeUtilityEstimator(MelModeParameters parameters, IDFSpatialPredictor spatialPredictor,
 			PersonPredictor personPredictor, BikePredictor bikePredictor) {
 		super(parameters, personPredictor, bikePredictor);
 

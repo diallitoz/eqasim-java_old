@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.eqasim.core.components.car_pt.routing.EqasimCarPtModule;
 import org.eqasim.core.components.car_pt.routing.EqasimPtCarModule;
+import org.eqasim.core.components.car_pt.routing.ParkRideManager;
+//import org.eqasim.core.components.car_pt.routing.ParkingFinder;
 import org.eqasim.core.components.config.EqasimConfigGroup;
 import org.eqasim.core.simulation.analysis.EqasimAnalysisModule;
 import org.eqasim.core.simulation.mode_choice.EqasimModeChoiceModule;
@@ -20,6 +22,7 @@ import org.matsim.core.config.ConfigUtils;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ActivityParams;
 import org.matsim.core.config.groups.PlanCalcScoreConfigGroup.ModeParams;
+import org.matsim.core.config.groups.StrategyConfigGroup.StrategySettings;
 import org.matsim.core.controler.Controler;
 import org.matsim.core.scenario.ScenarioUtils;
 
@@ -62,20 +65,6 @@ public class RunSimulation {
 			parkRideCoords.add(prCoord);
 		}
 
-		/*
-		 * 
-		 * double X1 = 695217.09, Y1 = 7059186.19; double X2 = 691365.43, Y2 =
-		 * 7065019.42; double X3 = 703543.53, Y3 = 7057923.10; Coord prCoord1 = new
-		 * Coord(X1, Y1); Coord prCoord2 = new Coord(X2, Y2); Coord prCoord3 = new
-		 * Coord(X3, Y3);
-		 * 
-		 * //To do: make a boucle to add all of locations
-		 * 
-		 * parkRideCoords.add(prCoord1); parkRideCoords.add(prCoord2);
-		 * parkRideCoords.add(prCoord3);
-		 * 
-		 */
-
 		// Eqasim config definition to add the mode car_pt estimation
 		EqasimConfigGroup eqasimConfig = EqasimConfigGroup.get(config);
 		eqasimConfig.setEstimator("car_pt", "CarPtUtilityEstimator");
@@ -112,22 +101,31 @@ public class RunSimulation {
 		cachedModes.add("pt_car");
 		dmcConfig.setCachedModes(cachedModes);
 
-		// Activation of constraint Car_pt Using
+		// Activation of constraint intermodal modes Using
 		Collection<String> tourConstraints = new HashSet<>(dmcConfig.getTourConstraints());
-		tourConstraints.add("VehicleTourConstraintWithCar_Pt");
+		//tourConstraints.add("VehicleTourConstraintWithCar_Pt");
+		tourConstraints.add("IntermodalModesConstraint");
 		dmcConfig.setTourConstraints(tourConstraints);
+		
+		
+		for (StrategySettings strategy : config.strategy().getStrategySettings()) {
+			  if(strategy.getName().equals("DiscreteModeChoice")) {
+			    strategy.setWeight(1000000000.0);
+			  }
+			}
+
 
 		Scenario scenario = ScenarioUtils.createScenario(config);
 		IDFConfigurator.configureScenario(scenario);
 		ScenarioUtils.loadScenario(scenario);
-
+		
 		Controler controller = new Controler(scenario);
 		IDFConfigurator.configureController(controller);
 		controller.addOverridingModule(new EqasimAnalysisModule());
 		controller.addOverridingModule(new EqasimModeChoiceModule());
-		controller.addOverridingModule(new IDFModeChoiceModule(cmd, parkRideCoords));
-		controller.addOverridingModule(new EqasimCarPtModule());
-		controller.addOverridingModule(new EqasimPtCarModule());
-		controller.run();
+		controller.addOverridingModule(new IDFModeChoiceModule(cmd, parkRideCoords,scenario.getNetwork(), scenario.getPopulation().getFactory()));
+		controller.addOverridingModule(new EqasimCarPtModule(parkRideCoords));
+		controller.addOverridingModule(new EqasimPtCarModule(parkRideCoords));
+		controller.run();	
 	}
 }

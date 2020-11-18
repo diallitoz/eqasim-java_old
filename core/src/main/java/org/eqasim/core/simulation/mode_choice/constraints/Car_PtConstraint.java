@@ -34,7 +34,7 @@ public class Car_PtConstraint extends AbstractTripConstraint {
 		@Override
 		public TripConstraint createConstraint(Person person, List<DiscreteModeChoiceTrip> planTrips,
 				Collection<String> availableModes) {
-			return new PassengerConstraint();
+			return new Car_PtConstraint();
 		}
 	}
 

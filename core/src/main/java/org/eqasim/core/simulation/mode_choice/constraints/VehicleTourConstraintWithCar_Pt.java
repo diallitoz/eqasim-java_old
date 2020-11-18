@@ -1,6 +1,7 @@
 package org.eqasim.core.simulation.mode_choice.constraints;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.matsim.api.core.v01.BasicLocation;
@@ -51,16 +52,32 @@ public class VehicleTourConstraintWithCar_Pt implements TourConstraint {
 	public boolean validateBeforeEstimation(List<DiscreteModeChoiceTrip> tour, List<String> modes,
 			List<List<String>> previousModes) {// What are the modes for an agent???
 		// if (modes.contains("car_pt")) {
-		for (String restrictedMode : restrictedModes) {
-			if (modes.contains(restrictedMode) && (restrictedMode == "car_pt" || restrictedMode == "pt_car")) {
+		if (restrictedModes.contains("car_pt") && !restrictedModes.contains("pt_car")) {
+			return false;
+		}
 
-				// Take into account the tour with only two trips (h-w-h or h-l-h or h-sh-h or
-				// h-sc-h)
-				if (tour.size() > 2) {
-					return false;
-				}
+		if (restrictedModes.contains("pt_car") && !restrictedModes.contains("car_pt")) {
+			return false;
+		}
+		
+		if (!restrictedModes.contains("pt_car") || !restrictedModes.contains("car_pt")) {
+			return false;
+		}
+		
+		//if(Collections.frequency(modes, "pt_car")!=Collections.frequency(modes, "car_pt")) {
+		//	return false;
+		//}
+
+		// * If the mode used is car-pt for the outward trip then for the return, the
+		// mode
+		// * to be used must be pt_car. For the moment, it is assumed that the user
+		// always
+		// * comes home with his car, necessarily passing through the relay car park.
+		for (String restrictedMode : restrictedModes) {
+
+			if (modes.contains(restrictedMode)) {
 				int firstIndex = getFirstIndex(restrictedMode, modes);
-				int lastIndex = getLastIndex("pt_car", modes);
+				int lastIndex = getLastIndex(restrictedMode, modes);
 
 				if (homeLocationId != null) {
 					Id<? extends BasicLocation> startLocationId = LocationUtils
@@ -75,29 +92,53 @@ public class VehicleTourConstraintWithCar_Pt implements TourConstraint {
 					if (!endLocationId.equals(homeLocationId)) {
 						return false;
 					}
-				}
-
-				/*
-				 * If the mode used is car-pt for the outward trip then for the return, the mode
-				 * to be used must be pt_car. For the moment, it is assumed that the user always
-				 * comes home with his car, necessarily passing through the relay car park.
-				 */
-				DiscreteModeChoiceTrip nextTrip = tour.get(firstIndex + 1);
-
-				if (restrictedMode == "car_pt") {
-					if (!nextTrip.getInitialMode().equals("pt_car")) {
-						return false;
-					}
-				}
-
-				if (restrictedMode == "pt_car") {
-					if (!nextTrip.getInitialMode().equals("car_pt")) {
+				} else {
+					if (firstIndex > 0 || lastIndex < modes.size() - 1) {
 						return false;
 					}
 				}
 			}
+			
+			if (restrictedMode.equals("car_pt")) {
+				int first_car_pt = getFirstIndex(restrictedMode, modes);
+				DiscreteModeChoiceTrip trip = tour.get(first_car_pt);
+				if (!trip.getInitialMode().equals("car_pt")) {
+					return false;
+				}
+				
+			}
+
+			if (restrictedMode.equals("pt_car")) {
+				int first_pt_car = getFirstIndex(restrictedMode, modes);
+				DiscreteModeChoiceTrip trip = tour.get(first_pt_car);
+				if (!trip.getInitialMode().equals("pt_car")) {
+					return false;
+				}
+			}
+			
+/*
+			for (int i = 0; i < tour.size(); i++) {
+				if (i < tour.size() - 1) {
+					DiscreteModeChoiceTrip nextTrip = tour.get(i + 1);
+
+					if (restrictedMode == "car_pt") {
+						if (!nextTrip.getInitialMode().equals("pt_car")) {
+							return false;
+						}
+					}
+
+					if (restrictedMode == "pt_car") {
+						if (!nextTrip.getInitialMode().equals("car_pt")) {
+							return false;
+						}
+					}
+				}
+
+			}
+*/
 		}
 
+		
 		return true;
 	}
 
