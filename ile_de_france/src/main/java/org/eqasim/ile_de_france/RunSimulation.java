@@ -7,12 +7,8 @@ import java.util.List;
 
 import org.eqasim.core.components.car_pt.routing.EqasimCarPtModule;
 import org.eqasim.core.components.car_pt.routing.EqasimPtCarModule;
-<<<<<<< HEAD
 import org.eqasim.core.components.car_pt.routing.ParkRideManager;
 //import org.eqasim.core.components.car_pt.routing.ParkingFinder;
-=======
-import org.eqasim.core.components.car_pt.routing.ParkingFinder;
->>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 import org.eqasim.core.components.config.EqasimConfigGroup;
 import org.eqasim.core.simulation.analysis.EqasimAnalysisModule;
 import org.eqasim.core.simulation.mode_choice.EqasimModeChoiceModule;
@@ -123,19 +119,11 @@ public class RunSimulation {
 		IDFConfigurator.configureScenario(scenario);
 		ScenarioUtils.loadScenario(scenario);
 		
-<<<<<<< HEAD
-=======
-
->>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 		Controler controller = new Controler(scenario);
 		IDFConfigurator.configureController(controller);
 		controller.addOverridingModule(new EqasimAnalysisModule());
 		controller.addOverridingModule(new EqasimModeChoiceModule());
-<<<<<<< HEAD
 		controller.addOverridingModule(new IDFModeChoiceModule(cmd, parkRideCoords,scenario.getNetwork(), scenario.getPopulation().getFactory()));
-=======
-		controller.addOverridingModule(new IDFModeChoiceModule(cmd, parkRideCoords,scenario.getNetwork()));
->>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 		controller.addOverridingModule(new EqasimCarPtModule(parkRideCoords));
 		controller.addOverridingModule(new EqasimPtCarModule(parkRideCoords));
 		controller.run();	

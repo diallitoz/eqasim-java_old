@@ -59,11 +59,7 @@ public class PtCarRoutingModule implements RoutingModule {
 		// Park and ride lot location
 		
 		ParkingFinder prFinder = new ParkingFinder(parkRideCoords);
-<<<<<<< HEAD
 		//Facility prFacility = prFinder.getParking(person, fromFacility, toFacility, network);
-=======
-		Facility prFacility = prFinder.getParking(person, fromFacility, toFacility, network);
->>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 
 		
 		Facility prkFacility = prFinder.getParking(person, fromFacility, toFacility, network);
@@ -90,16 +86,10 @@ public class PtCarRoutingModule implements RoutingModule {
 				null);
 
 		// Creation interaction between pt and car
-<<<<<<< HEAD
 		Link prLink = NetworkUtils.getNearestLink(network, prkFacility.getCoord());
 		Activity interactionActivtyPtCar = PopulationUtils.createActivityFromCoordAndLinkId("ptCar interaction",
 				prkFacility.getCoord(), prLink.getId());
 		interactionActivtyPtCar.setMaximumDuration(300);// 5 min
-=======
-		Link prLink = NetworkUtils.getNearestLink(network, prFacility.getCoord());
-		Activity interactionActivtyPtCar = PopulationUtils.createActivityFromCoordAndLinkId("ptCar interaction",
-				prFacility.getCoord(), prLink.getId());
->>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 
 		// Creation full trip
 		List<PlanElement> allElements = new LinkedList<>();

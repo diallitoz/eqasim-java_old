@@ -15,10 +15,6 @@ import org.matsim.core.population.PopulationUtils;
 import org.matsim.core.router.RoutingModule;
 import org.matsim.facilities.Facility;
 
-<<<<<<< HEAD
-=======
-import gnu.trove.impl.PrimeFinder;
->>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 
 import org.matsim.core.router.StageActivityTypes;
 import org.matsim.core.router.StageActivityTypesImpl;
@@ -88,10 +84,7 @@ public class CarPtRoutingModule implements RoutingModule {
 		Link prLink = NetworkUtils.getNearestLink(network, prkFacility.getCoord());
 		Activity interactionActivtyCarPt = PopulationUtils.createActivityFromCoordAndLinkId("carPt interaction",
 				prkFacility.getCoord(), prLink.getId());
-<<<<<<< HEAD
 		interactionActivtyCarPt.setMaximumDuration(300);// 5 min
-=======
->>>>>>> e0722bc60eef3c96feb9cde3f4cd44107fc000e2
 
 		// Creation full trip
 		List<PlanElement> allElements = new LinkedList<>();
