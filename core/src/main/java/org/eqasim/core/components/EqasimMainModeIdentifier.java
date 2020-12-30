@@ -8,10 +8,20 @@ import org.matsim.api.core.v01.population.PlanElement;
 import org.matsim.core.router.MainModeIdentifier;
 import org.matsim.core.router.TripStructureUtils;
 
+import org.matsim.api.core.v01.population.Activity;
+
 public class EqasimMainModeIdentifier implements MainModeIdentifier {
 	@Override
 	public String identifyMainMode(List<? extends PlanElement> tripElements) {
+		// car_pt mode
+		for (Activity act : TripStructureUtils.getActivities(tripElements, null)) {
+			if (act.getType().equals("carPt interaction") || act.getType().equals("ptCar interaction")) {
+				return "car_pt";
+			}
+		}
+
 		for (Leg leg : TripStructureUtils.getLegs(tripElements)) {
+
 			if (!leg.getMode().contains("walk")) {
 				return leg.getMode();
 			}
