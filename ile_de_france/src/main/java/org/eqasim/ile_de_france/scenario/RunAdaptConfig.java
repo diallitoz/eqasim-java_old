@@ -5,14 +5,15 @@ import org.eqasim.core.components.config.EqasimConfigGroup;
 import org.eqasim.ile_de_france.IDFConfigurator;
 import org.eqasim.ile_de_france.mode_choice.IDFModeChoiceModule;
 import org.matsim.api.core.v01.TransportMode;
+import org.matsim.contribs.discrete_mode_choice.modules.config.DiscreteModeChoiceConfigGroup;
 import org.matsim.core.config.CommandLine.ConfigurationException;
 import org.matsim.core.config.Config;
-
-import ch.ethz.matsim.discrete_mode_choice.modules.config.DiscreteModeChoiceConfigGroup;
+import org.matsim.core.config.groups.PlanCalcScoreConfigGroup;
 
 public class RunAdaptConfig {
 	static public void main(String[] args) throws ConfigurationException {
-		ConfigAdapter.run(args, IDFConfigurator.getConfigGroups(), RunAdaptConfig::adaptConfiguration);
+		IDFConfigurator configurator = new IDFConfigurator();
+		ConfigAdapter.run(args, configurator.getConfigGroups(), RunAdaptConfig::adaptConfiguration);
 	}
 
 	static public void adaptConfiguration(Config config) {
@@ -29,6 +30,11 @@ public class RunAdaptConfig {
 				.get(DiscreteModeChoiceConfigGroup.GROUP_NAME);
 
 		dmcConfig.setModeAvailability(IDFModeChoiceModule.MODE_AVAILABILITY_NAME);
+
+		// Potentially should be moved to the general GenerateConfig class. Wait time
+		// should matter for routing!
+		PlanCalcScoreConfigGroup scoringConfig = config.planCalcScore();
+		scoringConfig.setMarginalUtlOfWaitingPt_utils_hr(-1.0);
 
 		// Calibration results for 5%
 

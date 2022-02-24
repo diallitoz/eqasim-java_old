@@ -5,7 +5,6 @@ import java.util.List;
 import org.eqasim.core.simulation.mode_choice.utilities.UtilityEstimator;
 import org.eqasim.core.simulation.mode_choice.utilities.estimators.EstimatorUtils;
 import org.eqasim.core.simulation.mode_choice.utilities.predictors.PersonPredictor;
-import ch.ethz.matsim.discrete_mode_choice.model.DiscreteModeChoiceTrip;
 import org.eqasim.sao_paulo.mode_choice.parameters.SaoPauloModeParameters;
 import org.eqasim.sao_paulo.mode_choice.utilities.predictors.SaoPauloPersonPredictor;
 import org.eqasim.sao_paulo.mode_choice.utilities.predictors.SaoPauloTaxiPredictor;
@@ -13,6 +12,7 @@ import org.eqasim.sao_paulo.mode_choice.utilities.variables.SaoPauloPersonVariab
 import org.eqasim.sao_paulo.mode_choice.utilities.variables.TaxiVariables;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.contribs.discrete_mode_choice.model.DiscreteModeChoiceTrip;
 
 import com.google.inject.Inject;
 
@@ -42,10 +42,10 @@ public class SaoPauloTaxiUtilityEstimator implements UtilityEstimator {
 		utility += estimateAccessEgressTimeUtility(variables_taxi);
 		if (variables.hhlIncome == 0.0)
 			utility += estimateMonetaryCostUtility(variables_taxi)
-			* (parameters.spAvgHHLIncome.avg_hhl_income / 1.0);
+			* (parameters.spAvgHHLIncome.avg_hhl_income / parameters.spAvgHHLIncome.avg_hhl_income);
 		else
 			utility += estimateMonetaryCostUtility(variables_taxi)
-				* (parameters.spAvgHHLIncome.avg_hhl_income / variables.hhlIncome);
+				* (parameters.spAvgHHLIncome.avg_hhl_income / parameters.spAvgHHLIncome.avg_hhl_income);
 
 		return utility;
 	}

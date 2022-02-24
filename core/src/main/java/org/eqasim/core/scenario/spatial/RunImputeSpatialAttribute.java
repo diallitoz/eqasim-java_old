@@ -17,9 +17,7 @@ import org.matsim.core.network.io.MatsimNetworkReader;
 import org.matsim.core.network.io.NetworkWriter;
 import org.matsim.core.population.io.PopulationReader;
 import org.matsim.core.population.io.PopulationWriter;
-import org.matsim.core.router.StageActivityTypesImpl;
 import org.matsim.core.scenario.ScenarioUtils;
-import org.matsim.pt.PtConstants;
 
 public class RunImputeSpatialAttribute {
 	static public void main(String[] args)
@@ -47,13 +45,13 @@ public class RunImputeSpatialAttribute {
 
 		// Set up imputation
 
+		EqasimConfigurator configurator = new EqasimConfigurator();
 		Config config = ConfigUtils.createConfig();
 		Scenario scenario = ScenarioUtils.createScenario(config);
-		EqasimConfigurator.configureScenario(scenario);
+		configurator.configureScenario(scenario);
 
 		String attribute = cmd.getOptionStrict("attribute");
-		ImputeSpatialAttribute algorithm = new ImputeSpatialAttribute(shape, attribute,
-				new StageActivityTypesImpl(PtConstants.TRANSIT_ACTIVITY_TYPE));
+		ImputeSpatialAttribute algorithm = new ImputeSpatialAttribute(shape, attribute);
 
 		// Load network
 		if (cmd.hasOption("input-network-path")) {

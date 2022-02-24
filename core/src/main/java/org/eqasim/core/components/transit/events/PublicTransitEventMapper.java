@@ -3,12 +3,12 @@ package org.eqasim.core.components.transit.events;
 import org.matsim.api.core.v01.Id;
 import org.matsim.api.core.v01.events.GenericEvent;
 import org.matsim.api.core.v01.population.Person;
-import org.matsim.core.events.EventsReaderXMLv1.CustomEventMapper;
+import org.matsim.core.events.MatsimEventsReader.CustomEventMapper;
 import org.matsim.pt.transitSchedule.api.TransitLine;
 import org.matsim.pt.transitSchedule.api.TransitRoute;
 import org.matsim.pt.transitSchedule.api.TransitStopFacility;
 
-public class PublicTransitEventMapper implements CustomEventMapper<PublicTransitEvent> {
+public class PublicTransitEventMapper implements CustomEventMapper {
 	@Override
 	public PublicTransitEvent apply(GenericEvent event) {
 		double arrivalTime = event.getTime();

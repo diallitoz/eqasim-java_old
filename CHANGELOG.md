@@ -1,6 +1,63 @@
 # CHANGELOG
 
-- No changes yet
+This change log is written in descending order. Changes that happen after version
+`X` was released, are written *above* that version number, because they will be
+included in the (note yet determined) next version number.
+
+**Development version**
+
+- Add fixed epsilon functionality
+- Transform scenario configurators to proper classes (formerly static methods)
+- Set routing parameter for waiting time in Île-de-France to -1.0
+- Allow cutter to process events to (1) perform routing based on recorded travel time, and (2) find crossing points based on the actual link enter/leave times of a previous simulation
+- Simplify cutting by introducing `--plans-path` option which is interpreted as relative to CWD
+- Location assignment functionality for scenario preparation functionality has been removed. A more advanced is used in the upstream Python pipelines for scenario generation.
+- Add volume-delay function module
+- Add routing utilities based on scenarios
+- Fix bug in plan to CSV conversion when arrival activity start time is not set
+- Make use of new convergence markers in MATSim
+- Change trips output file name to `eqasim_trips.csv`
+- Port analysis code from AMoDeus to DRT example
+- Add example how to treat rejections in the examples
+
+**1.3.1**
+
+- Removed unmaintained Auckland scenario (check *v1.3.0* to recover)
+- Fix certificate issues while generating shaded jar
+- Shift to packagecloud
+- Shift to Github Actions for testing
+
+**1.3.0**
+
+- Updated `examples` with an example for running DRT in the Corsica test scenario
+- Remove `automated_vehicles` module, `drt` should be used now
+- Update MATSim to version `13.0`
+- Bugfix: `RecordedTravelTime::readFromEvents` was not actually reading events.
+
+**1.2.1**
+
+- Consider link / facility coordinates in plan-based trip analysis if network / facilities are provided
+- Bugfix: Rare issue in `EqasimTransitEngine` leading to inconsistent ordering of event times
+- Homefinder is updated in SF, LA, and SP. It is now in eqasim
+- Added business activity in LA and adapted config file accordingly
+- Recalibrated parameters and udpated car costs in SP
+- In SP run script we currently make car->walk to allow to reach equilibrium
+- SP config is updated
+
+**1.2.0**
+
+- Properly perform mode choice for "free" activity chains or those which do not start or end with "home"
+- Added Corsica unit test case for running simulation and cutting French scenarios
+- Remove `EnrichedTransitRoute` and use default `TransitPassengerRoute`
+- Enable support for network-based public transport simulation by setting `eqasim.useScheduleBasedTransport` to `false` (it is activated by default)
+
+**1.1.0**
+
+- Cutter: Cut transit routes with only *one* stop are not included anymore
+- `ModularUtilityEstimator` -> `ModalUtilityEstimator`
+- Removed `UniversalTourFinder` in favor of well-configured `ActivityTourFinder`
+- Introduction of routed_distance (in contrary to Euclidean distance) and vehicle_distance (all distance covered link by link) into the trip analysis. Changed header, e.g. `preceding_purpose` and `following_purpose`, `euclidean_distance`
+- Update to *MATSim 12.0*
 
 **1.0.6**
 

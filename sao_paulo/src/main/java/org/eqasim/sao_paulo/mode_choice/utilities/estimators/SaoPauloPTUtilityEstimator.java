@@ -11,10 +11,9 @@ import org.eqasim.sao_paulo.mode_choice.utilities.predictors.SaoPauloPersonPredi
 import org.eqasim.sao_paulo.mode_choice.utilities.variables.SaoPauloPersonVariables;
 import org.matsim.api.core.v01.population.Person;
 import org.matsim.api.core.v01.population.PlanElement;
+import org.matsim.contribs.discrete_mode_choice.model.DiscreteModeChoiceTrip;
 
 import com.google.inject.Inject;
-
-import ch.ethz.matsim.discrete_mode_choice.model.DiscreteModeChoiceTrip;
 
 public class SaoPauloPTUtilityEstimator  extends PtUtilityEstimator{
 	private final SaoPauloModeParameters parameters;
@@ -54,10 +53,10 @@ public class SaoPauloPTUtilityEstimator  extends PtUtilityEstimator{
 		utility += estimateAgeUtility(person);
 		if (variables.hhlIncome == 0.0)
 			utility += estimateMonetaryCostUtility(variables_pt)
-			* (parameters.spAvgHHLIncome.avg_hhl_income / 1.0);
+			* (parameters.spAvgHHLIncome.avg_hhl_income / parameters.spAvgHHLIncome.avg_hhl_income);
 		else
 			utility += estimateMonetaryCostUtility(variables_pt)
-				* (parameters.spAvgHHLIncome.avg_hhl_income / variables.hhlIncome);
+				* (parameters.spAvgHHLIncome.avg_hhl_income / parameters.spAvgHHLIncome.avg_hhl_income);
 
 		return utility;
 	}

@@ -23,10 +23,12 @@ public class SaoPauloCostParameters implements ParameterDefinition {
 		parameters.ptCostPerTrip_0Transfers_BRL = 4.3;
 		parameters.ptCostPerTrip_3Transfers_BRL = 7.48;
 		
-		parameters.taxiPickUpFee_BRL = 3.25;//4.16;
-		parameters.taxiCostPerMin_BRL = 0.38;//0.48;
-		parameters.taxiCostPerkm_BRL = 2.0;//2.4;
-		parameters.taxMinCost_BRL = 7.0;//2.4;
+		// it is assumed a 2 person occupancy of taxi services
+		parameters.taxiPickUpFee_BRL = 2.08;//4.16;
+		parameters.taxiCostPerMin_BRL = 0.24;//0.48;
+		parameters.taxiCostPerkm_BRL = 1.2;//2.4;
+		parameters.taxMinCost_BRL = 7.0;
+
 
 		return parameters;
 	}

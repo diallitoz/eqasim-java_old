@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Optional;
 
+import org.eqasim.core.components.travel_time.RecordedTravelTime;
 import org.eqasim.core.misc.InjectorBuilder;
-import org.eqasim.core.misc.InteractionStageActivityTypes;
 import org.eqasim.core.scenario.cutter.extent.ScenarioExtent;
 import org.eqasim.core.scenario.cutter.extent.ShapeScenarioExtent;
 import org.eqasim.core.scenario.cutter.facilities.CleanHomeFacilities;
@@ -41,7 +41,7 @@ public class RunScenarioCutter {
 			throws ConfigurationException, MalformedURLException, IOException, InterruptedException {
 		CommandLine cmd = new CommandLine.Builder(args) //
 				.requireOptions("config-path", "output-path", "extent-path") //
-				.allowOptions("threads", "prefix", "extent-attribute", "extent-value") //
+				.allowOptions("threads", "prefix", "extent-attribute", "extent-value", "plans-path", "events-path") //
 				.build();
 
 		// Load some configuration
@@ -59,25 +59,47 @@ public class RunScenarioCutter {
 		ScenarioExtent extent = new ShapeScenarioExtent.Builder(extentPath, extentAttribute, extentValue).build();
 
 		// Load scenario
-		Config config = ConfigUtils.loadConfig(cmd.getOptionStrict("config-path"),
-				EqasimConfigurator.getConfigGroups());
+		EqasimConfigurator configurator = new EqasimConfigurator();
+		Config config = ConfigUtils.loadConfig(cmd.getOptionStrict("config-path"), configurator.getConfigGroups());
 		cmd.applyConfiguration(config);
 
+		Optional<String> plansPath = cmd.getOption("plans-path");
+
+		if (plansPath.isPresent()) {
+			File plansFile = new File(plansPath.get());
+
+			if (!plansFile.exists()) {
+				throw new IllegalStateException("Plans file does not exist: " + plansPath);
+			} else {
+				config.plans().setInputFile(plansFile.getAbsolutePath());
+			}
+		}
+
 		Scenario scenario = ScenarioUtils.createScenario(config);
-		EqasimConfigurator.configureScenario(scenario);
+		configurator.configureScenario(scenario);
 		ScenarioUtils.loadScenario(scenario);
 
 		// Check validity before cutting
-		ScenarioValidator scenarioValidator = new ScenarioValidator(new InteractionStageActivityTypes());
+		ScenarioValidator scenarioValidator = new ScenarioValidator();
 		scenarioValidator.checkScenario(scenario);
 
 		// Prepare road network
 		RoadNetwork roadNetwork = new RoadNetwork(scenario.getNetwork());
 
+		// Optionally, load travel time
+		Optional<RecordedTravelTime> travelTime = Optional.empty();
+
+		if (cmd.hasOption("events-path")) {
+			travelTime = Optional.of(RecordedTravelTime.readFromEvents( //
+					new File(cmd.getOptionStrict("events-path")), roadNetwork, config));
+		}
+
 		// Cut population
 		Injector populationCutterInjector = new InjectorBuilder(scenario) //
-				.addOverridingModules(EqasimConfigurator.getModules()) //
-				.addOverridingModule(new PopulationCutterModule(extent, numberOfThreads, 40)) //
+				.addOverridingModules(configurator.getModules()) //
+				.addOverridingModule(
+						new PopulationCutterModule(extent, numberOfThreads, 40, cmd.getOption("events-path"))) //
+				.addOverridingModule(new CutterTravelTimeModule(travelTime)) //
 				.build();
 
 		PopulationCutter populationCutter = populationCutterInjector.getInstance(PopulationCutter.class);
@@ -119,15 +141,16 @@ public class RunScenarioCutter {
 
 		// "Cut" config
 		// (we need to reload it, because it has become locked at this point)
-		config = ConfigUtils.loadConfig(cmd.getOptionStrict("config-path"), EqasimConfigurator.getConfigGroups());
+		config = ConfigUtils.loadConfig(cmd.getOptionStrict("config-path"), configurator.getConfigGroups());
 		cmd.applyConfiguration(config);
 		ConfigCutter configCutter = new ConfigCutter(prefix);
 		configCutter.run(config);
 
 		// Final routing
 		Injector routingInjector = new InjectorBuilder(scenario) //
-				.addOverridingModules(EqasimConfigurator.getModules()) //
+				.addOverridingModules(configurator.getModules()) //
 				.addOverridingModule(new PopulationRouterModule(numberOfThreads, 100, false)) //
+				.addOverridingModule(new CutterTravelTimeModule(travelTime)) //
 				.build();
 
 		PopulationRouter router = routingInjector.getInstance(PopulationRouter.class);
